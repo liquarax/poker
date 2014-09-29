@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.*;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -394,16 +393,22 @@ public class Poker_Client {
     }
 
     public static void main(String[] args) {
+        String ip;
+        
+        WelcomeFrame wFrame = new WelcomeFrame();
+        
+        ip = wFrame.getIp();
+        
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 createAndShowGui();
             }
         });
-        if (Integer.parseInt(args[0]) == 1) ///TODO make it in gui
-        {
-            ServerConection(null); //loopback
-            //ServerConection(args[1]);//spojime se se serverem
-        }
+        
+        
+        
+        ServerConection(ip);//spojime se se serverem
+        
     }
 }
