@@ -6,12 +6,11 @@ package poker.server;
 
 import java.io.*;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.omg.CORBA.INTERNAL;
 import poker.*;
+import poker.communication.CommunicationCommons;
 
 /**
  *Server, zajišťuje průběh hry a komunikuje s klientem
@@ -72,6 +71,8 @@ public class Poker_Server {
                     break;
                 first_time=false;
                 if(players.get(i).isPlaying() && !players.get(i).is_All_in()){
+                    players.get(i).send(CommunicationCommons.potISMessage);
+                    players.get(i).send(pot);
                     players.get(i).send("bet is");
                     players.get(i).send(bet);
                     String s=players.get(i).recv();

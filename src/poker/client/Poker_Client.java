@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import poker.*;
+import poker.communication.CommunicationCommons;
 
 /**
  * Hrafický klient serveru
@@ -25,14 +26,11 @@ public class Poker_Client {
     private static boolean onMove;
     private static boolean moved;
     private static String myMove;
-    private static BufferedReader in;
-    private static int a;
-    private static PrintWriter out;
     private volatile static LargeCardPanel centralCp;
     private volatile static SmallCardPanel rightCp;
     private static ArrayList<SmallCardPanel> CounterPlayers;
     private static ArrayList<Card> cards, hidecards;
-    private static JLabel chips, bet, lmove, end;
+    private static JLabel chips, bet, lmove, end, pot;
     private static TextField raise;
 
     /**
@@ -115,10 +113,13 @@ public class Poker_Client {
                 cards.add(new Card(in.readLine()));
                 centralCp.set();
             }
-            if (s.equals("bet is")) {
+            if (s.equals(CommunicationCommons.potISMessage)){
+                pot.setText(in.readLine());
+            }
+            if (s.equals("bet is")) {   //kdyz prijde sazka spousti se interakce
                 onMove = true;
                 moved = false;
-                lmove.setText("---");
+                lmove.setText("It's your turn!");
                 bet.setText(in.readLine());
                 while (!moved) {
                     try {
@@ -131,7 +132,7 @@ public class Poker_Client {
                     out.println(Integer.parseInt(bet.getText()) + Integer.parseInt(raise.getText()));
                 }
                 onMove = false;
-                lmove.setText("XXX");
+                lmove.setText("Wait for other players");
             }
         }
     }
@@ -278,14 +279,16 @@ public class Poker_Client {
         GridBagConstraints c = new GridBagConstraints();
         centralPanel.setBackground(Color.getHSBColor((float) 0.5, (float) 0.5, (float) 0.7));
 
-        JLabel caption1 = new JLabel("Texas Hold'em");
-        JLabel caption2 = new JLabel("Poker");
-        JLabel caption3 = new JLabel("Chips: ");
-        JLabel caption4 = new JLabel("Bet is: ");
+        final JLabel caption1 = new JLabel("Texas Hold'em");
+        final JLabel caption2 = new JLabel("Poker");
+        final JLabel caption3 = new JLabel("Chips: ");
+        final JLabel caption4 = new JLabel("Bet is: ");
+        final JLabel potIsLabel = new JLabel("Pot is: ");
         caption1.setFont(new Font("Jokerman", Font.PLAIN, 48));
         caption2.setFont(new Font("Jokerman", Font.PLAIN, 48));
-        bet = new JLabel("888888");
-        lmove = new JLabel("XXXX");
+        bet = new JLabel("0");
+        pot = new JLabel("0");
+        lmove = new JLabel("Wait for other players");
 
         centralCp = new LargeCardPanel(new GridLayout(1, 5, 4, 0));
         rightCp = new SmallCardPanel(new GridLayout(1, 2, 4, 0));
@@ -301,7 +304,8 @@ public class Poker_Client {
         centralPanel.add(caption4);
         centralPanel.add(bet);
         centralPanel.add(lmove, c);
-
+        centralPanel.add(potIsLabel, c);
+        centralPanel.add(pot, c);
 
         JPanel controler = new JPanel(); //ma implicitni flow layout
         controler.setBackground(Color.getHSBColor((float) 0.5, (float) 0.5, (float) 0.7));
@@ -359,7 +363,7 @@ public class Poker_Client {
         });
 
         chips = new JLabel("2000");
-        raise = new TextField("1000");
+        raise = new TextField("10");
 
 
         controler.add(raise);
