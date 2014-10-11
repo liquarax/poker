@@ -33,6 +33,8 @@ public class Poker_Client {
     private static JLabel chips, bet, lmove, end, pot;
     private static TextField raise;
 
+    private static int myLastBetInRound;
+    
     /**
      * metoda simulující průběh hry, přijímá instrukce, od serveru
      *
@@ -46,6 +48,7 @@ public class Poker_Client {
         cards = new ArrayList<Card>();
         hidecards = new ArrayList<Card>();
         onMove = false;
+        myLastBetInRound = 0;
         //prijmu id
         me = Integer.parseInt(in.readLine());
         while (true) {
@@ -87,8 +90,9 @@ public class Poker_Client {
             if (s.equals("You have lost!")) {
                 lmove.setText("You have lost!");
             }
-            if (s.equals("hide cards")) {
+            if (s.equals("hide cards")) { //zacina dalsi kolo hry
                 try {
+                    myLastBetInRound = 0;
                     hidecards.clear();
                     hidecards.add(new Card(in.readLine()));
                     hidecards.add(new Card(in.readLine()));
@@ -113,14 +117,20 @@ public class Poker_Client {
                 cards.add(new Card(in.readLine()));
                 centralCp.set();
             }
-            if (s.equals(CommunicationCommons.potISMessage)){
+            if (s.equals(CommunicationCommons.setBlindMessage)){
+                myLastBetInRound = Integer.parseInt(in.readLine());
+                Integer chipsLeft = Integer.parseInt(chips.getText()) - myLastBetInRound;
+                chips.setText(chipsLeft.toString());
+            }
+            if (s.equals(CommunicationCommons.potIsMessage)){
                 pot.setText(in.readLine());
             }
             if (s.equals("bet is")) {   //kdyz prijde sazka spousti se interakce
                 onMove = true;
                 moved = false;
                 lmove.setText("It's your turn!");
-                bet.setText(in.readLine());
+                int betSize = Integer.parseInt(in.readLine());
+                bet.setText(Integer.toString(betSize-myLastBetInRound));
                 while (!moved) {
                     try {
                         Thread.sleep(100);
@@ -129,7 +139,7 @@ public class Poker_Client {
                 }
                 out.println(myMove);
                 if (myMove.equals("raise")) {
-                    out.println(Integer.parseInt(bet.getText()) + Integer.parseInt(raise.getText()));
+                    out.println(betSize + Integer.parseInt(raise.getText()));
                 }
                 onMove = false;
                 lmove.setText("Wait for other players");
@@ -323,6 +333,7 @@ public class Poker_Client {
                     myMove = "call";
                     Integer chipsLeft = Integer.parseInt(chips.getText()) - Integer.parseInt(bet.getText());
                     chips.setText(chipsLeft.toString());
+                    myLastBetInRound += Integer.parseInt(bet.getText());
                     moved = true;
                 }
             }
@@ -335,6 +346,7 @@ public class Poker_Client {
                     myMove = "raise";
                     Integer chipsLeft = Integer.parseInt(chips.getText()) - Integer.parseInt(bet.getText()) - Integer.parseInt(raise.getText());
                     chips.setText(chipsLeft.toString());
+                    myLastBetInRound += Integer.parseInt(bet.getText())+Integer.parseInt(raise.getText());
                     moved = true;
                 }
             }
@@ -345,7 +357,6 @@ public class Poker_Client {
             public void actionPerformed(ActionEvent ae) {
                 if (onMove) {
                     myMove = "fold";
-
                     moved = true;
                 }
             }

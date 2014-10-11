@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 /**
  *
  * @author Jaroslav Brabec
+ * 
+ * Okno, které vyskočí na začátku hry a požaduje po uživateli IP herního serveru.
  */
 public final class WelcomeFrame {
 

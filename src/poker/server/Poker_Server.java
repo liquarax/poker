@@ -71,7 +71,7 @@ public class Poker_Server {
                     break;
                 first_time=false;
                 if(players.get(i).isPlaying() && !players.get(i).is_All_in()){
-                    players.get(i).send(CommunicationCommons.potISMessage);
+                    players.get(i).send(CommunicationCommons.potIsMessage);
                     players.get(i).send(pot);
                     players.get(i).send("bet is");
                     players.get(i).send(bet);
@@ -114,6 +114,8 @@ public class Poker_Server {
                             last=i;
                         }
                     }
+                    players.get(i).send(CommunicationCommons.potIsMessage);
+                    players.get(i).send(pot);
                 }
                 if(plays<2) throw new WinnerException(); //hra ukoncena, jedna sazka prevysila ostatni
             }
@@ -157,13 +159,18 @@ public class Poker_Server {
                 p.addCard(my_cd);
                 p.send(my_cd);
             }
-            //blindy
+            //blindy - nastaveni blindu a preskoceni hracu
              pot+=blind;
              players.get(first).setBet(blind);
+             players.get(first).send(CommunicationCommons.setBlindMessage);
+             players.get(first).send(blind);
              actbet=blind*2;
              first=(first+1)%players.size();
              pot+=actbet;
              players.get(first).setBet(actbet);
+             players.get(first).send(CommunicationCommons.setBlindMessage);
+             players.get(first).send(actbet);
+           
              first=(first+1)%players.size();
              //prvni kolo sazek
             pot=Bets(players,actbet,pot,first);
