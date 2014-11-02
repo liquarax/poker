@@ -28,13 +28,12 @@ public class Poker_Client {
     private static String myMove;
     private volatile static LargeCardPanel centralCp;
     private volatile static SmallCardPanel rightCp;
-    private static ArrayList<SmallCardPanel> CounterPlayers;
+    private static ArrayList<SmallCardPanel> counterPlayers;
     private static ArrayList<Card> cards, hidecards;
     private static JLabel chips, bet, lmove, end, pot;
     private static TextField raise;
-
     private static int myLastBetInRound;
-    
+
     /**
      * metoda simulující průběh hry, přijímá instrukce, od serveru
      *
@@ -51,99 +50,107 @@ public class Poker_Client {
         myLastBetInRound = 0;
         //prijmu id
         me = Integer.parseInt(in.readLine());
-        while (true) {
-            s = in.readLine();
-            System.out.println(s);
-            if (s.equals("chips")) {    //pocet zetonnu na zacatku hry
-                while (chips == null) {
+        try {
+            while (true) {
+                s = in.readLine();
+                System.out.println(s);
+                if (s.equals("chips")) {    //pocet zetonnu na zacatku hry
+                    while (chips == null) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException ex) {
+                        }
+                    }
+                    chips.setText(in.readLine());
+                }
+                if (s.equals("winning player")) {
+                    winner = Integer.parseInt(in.readLine());
+                }
+                if (s.equals("winning cards")) {
                     try {
-                        Thread.sleep(100);
+                        if (winner == 3) //pripad pro 4 hrace
+                        {
+                            winner = me;
+                        }
+                        if (winner != me) {
+                            hidecards.clear();
+                            hidecards.add(new Card(in.readLine()));
+                            hidecards.add(new Card(in.readLine()));
+                            counterPlayers.get(winner).set(hidecards);
+                        }
+                        Thread.sleep(5000);
+                        // CounterPlayers.get(0).clear();
+                        if (winner != me) {
+                            counterPlayers.get(winner).clear();
+                        }
                     } catch (InterruptedException ex) {
+                        Logger.getLogger(Poker_Client.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                chips.setText(in.readLine());
-            }
-            if (s.equals("winning player")) {
-                winner = Integer.parseInt(in.readLine());
-            }
-            if (s.equals("winning cards") && winner != me) {
-                try {
-                    if (winner == 3) //pripad pro 4 hrace
-                    {
-                        winner = me;
-                    }
-                    hidecards.clear();
-                    hidecards.add(new Card(in.readLine()));
-                    hidecards.add(new Card(in.readLine()));
-                    CounterPlayers.get(winner).set(hidecards);
-                    Thread.sleep(5000);
-                    // CounterPlayers.get(0).clear();
-                    CounterPlayers.get(winner).clear();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Poker_Client.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
 
-            if (s.equals("You have won!")) {
-                lmove.setText("You have won!");
-            }
-            if (s.equals("You have lost!")) {
-                lmove.setText("You have lost!");
-            }
-            if (s.equals("hide cards")) { //zacina dalsi kolo hry
-                try {
-                    myLastBetInRound = 0;
-                    hidecards.clear();
-                    hidecards.add(new Card(in.readLine()));
-                    hidecards.add(new Card(in.readLine()));
-                    while (rightCp == null) //tohle je pekna prasarna, ale funguje to 
-                    {
-                        Thread.sleep(100);
-                    }
-                    rightCp.set(hidecards);
-                    centralCp.clear();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Poker_Client.class.getName()).log(Level.SEVERE, null, ex);
+                if (s.equals("You have won!")) {
+                    lmove.setText("You have won!");
                 }
-            }
-            if (s.equals("flop")) {
-                cards.clear();
-                cards.add(new Card(in.readLine()));
-                cards.add(new Card(in.readLine()));
-                cards.add(new Card(in.readLine()));
-                centralCp.set();
-            }
-            if (s.equals("turn") || s.equals("river")) {
-                cards.add(new Card(in.readLine()));
-                centralCp.set();
-            }
-            if (s.equals(CommunicationCommons.setBlindMessage)){
-                myLastBetInRound = Integer.parseInt(in.readLine());
-                Integer chipsLeft = Integer.parseInt(chips.getText()) - myLastBetInRound;
-                chips.setText(chipsLeft.toString());
-            }
-            if (s.equals(CommunicationCommons.potIsMessage)){
-                pot.setText(in.readLine());
-            }
-            if (s.equals("bet is")) {   //kdyz prijde sazka spousti se interakce
-                onMove = true;
-                moved = false;
-                lmove.setText("It's your turn!");
-                int betSize = Integer.parseInt(in.readLine());
-                bet.setText(Integer.toString(betSize-myLastBetInRound));
-                while (!moved) {
+                if (s.equals("You have lost!")) {
+                    lmove.setText("You have lost!");
+                }
+                if (s.equals("hide cards")) { //zacina dalsi kolo hry
                     try {
-                        Thread.sleep(100);
+                        myLastBetInRound = 0;
+                        hidecards.clear();
+                        hidecards.add(new Card(in.readLine()));
+                        hidecards.add(new Card(in.readLine()));
+                        while (rightCp == null) //tohle je pekna prasarna, ale funguje to 
+                        {
+                            Thread.sleep(100);
+                        }
+                        rightCp.set(hidecards);
+                        centralCp.clear();
                     } catch (InterruptedException ex) {
+                        Logger.getLogger(Poker_Client.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                out.println(myMove);
-                if (myMove.equals("raise")) {
-                    out.println(betSize + Integer.parseInt(raise.getText()));
+                if (s.equals("flop")) {
+                    cards.clear();
+                    cards.add(new Card(in.readLine()));
+                    cards.add(new Card(in.readLine()));
+                    cards.add(new Card(in.readLine()));
+                    centralCp.set();
                 }
-                onMove = false;
-                lmove.setText("Wait for other players");
+                if (s.equals("turn") || s.equals("river")) {
+                    cards.add(new Card(in.readLine()));
+                    centralCp.set();
+                }
+                if (s.equals(CommunicationCommons.setBlindMessage)) {
+                    myLastBetInRound = Integer.parseInt(in.readLine());
+                    Integer chipsLeft = Integer.parseInt(chips.getText()) - myLastBetInRound;
+                    chips.setText(chipsLeft.toString());
+                }
+                if (s.equals(CommunicationCommons.potIsMessage)) {
+                    pot.setText(in.readLine());
+                }
+                if (s.equals("bet is")) {   //kdyz prijde sazka spousti se interakce
+                    onMove = true;
+                    moved = false;
+                    lmove.setText("It's your turn!");
+                    int betSize = Integer.parseInt(in.readLine());
+                    bet.setText(Integer.toString(betSize - myLastBetInRound));
+                    while (!moved) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException ex) {
+                        }
+                    }
+                    out.println(myMove);
+                    if (myMove.equals("raise")) {
+                        out.println(betSize + Integer.parseInt(raise.getText()));
+                    }
+                    onMove = false;
+                    lmove.setText("Wait for other players");
+                }
             }
+        } catch (SocketException se) {
+            //pohlceni vyjimky. hra konci
         }
     }
 
@@ -156,8 +163,6 @@ public class Poker_Client {
         try {
             s = new Socket(InetAddress.getByName(address), 7777);
             try {
-//                    GameThread GT=new GameThread(new BufferedReader(new InputStreamReader(s.getInputStream())),(new PrintWriter(new OutputStreamWriter(s.getOutputStream()), true)));
-//                    GT.start();
                 game(new BufferedReader(new InputStreamReader(s.getInputStream())), new PrintWriter(new OutputStreamWriter(s.getOutputStream()), true));
             } finally {
                 s.close();
@@ -165,6 +170,7 @@ public class Poker_Client {
         } catch (IOException ex) {
             Logger.getLogger(Poker_Client.class.getName()).log(Level.SEVERE, null, ex);
         }
+        lmove.setText("Game ended:" + lmove.getText());
     }
 
     /**
@@ -221,10 +227,16 @@ public class Poker_Client {
      */
     private static class SmallCardPanel extends JPanel {
 
-        private ArrayList<JLabel> jcd = new ArrayList<JLabel>();
-
-        public SmallCardPanel(LayoutManager l) {
+        protected ArrayList<JLabel> jcd = new ArrayList<JLabel>();
+        protected Color frontEndCardColor;
+        /**
+         * 
+         * @param l
+         * @param c Barva front-endu barvy 
+         */
+        public SmallCardPanel(LayoutManager l,Color c) {
             super(l);
+            this.frontEndCardColor = c;
             for (int i = 0; i < 2; i++) {
                 JLabel cd = new JLabel();
                 cd.setText("XX");
@@ -258,13 +270,13 @@ public class Poker_Client {
             for (Card c : cds) {
                 jcd.get(i).setText(c.toString());
                 jcd.get(i).setOpaque(true);
-                jcd.get(i).setBackground(Color.WHITE);
+                jcd.get(i).setBackground(frontEndCardColor);
                 jcd.get(i).setForeground(c.getColor().toInt() < 2 ? Color.red : Color.BLACK);
                 i++;
             }
         }
     }
-
+    
 //    private static JPanel InitCards(){
 //        JPanel p=new JPanel(new GridLayout(1, 5,4,0));
 //        p.setBackground(Color.getHSBColor((float) 0.5,(float) 0.5,(float) 0.7));
@@ -301,11 +313,11 @@ public class Poker_Client {
         lmove = new JLabel("Wait for other players");
 
         centralCp = new LargeCardPanel(new GridLayout(1, 5, 4, 0));
-        rightCp = new SmallCardPanel(new GridLayout(1, 2, 4, 0));
-        CounterPlayers = new ArrayList<SmallCardPanel>();
-        CounterPlayers.add(new SmallCardPanel(new GridLayout(1, 2, 4, 0)));
-        CounterPlayers.add(new SmallCardPanel(new GridLayout(1, 2, 4, 0)));
-        CounterPlayers.add(new SmallCardPanel(new GridLayout(1, 2, 4, 0)));
+        rightCp = new SmallCardPanel(new GridLayout(1, 2, 4, 0),Color.WHITE);
+        counterPlayers = new ArrayList<SmallCardPanel>();
+        counterPlayers.add(new SmallCardPanel(new GridLayout(1, 2, 4, 0),Color.YELLOW));
+        counterPlayers.add(new SmallCardPanel(new GridLayout(1, 2, 4, 0),Color.YELLOW));
+        counterPlayers.add(new SmallCardPanel(new GridLayout(1, 2, 4, 0),Color.YELLOW));
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         centralPanel.add(caption1, c);
@@ -346,7 +358,7 @@ public class Poker_Client {
                     myMove = "raise";
                     Integer chipsLeft = Integer.parseInt(chips.getText()) - Integer.parseInt(bet.getText()) - Integer.parseInt(raise.getText());
                     chips.setText(chipsLeft.toString());
-                    myLastBetInRound += Integer.parseInt(bet.getText())+Integer.parseInt(raise.getText());
+                    myLastBetInRound += Integer.parseInt(bet.getText()) + Integer.parseInt(raise.getText());
                     moved = true;
                 }
             }
@@ -388,12 +400,12 @@ public class Poker_Client {
         JPanel rightPanel = new JPanel(new GridLayout(2, 1));
         rightPanel.setBackground(Color.getHSBColor((float) 0.5, (float) 0.5, (float) 0.7));
         rightPanel.add(rightCp);
-        rightPanel.add(CounterPlayers.get(0));
+        rightPanel.add(counterPlayers.get(0));
 
         JPanel leftPanel = new JPanel(new GridLayout(2, 1));
         leftPanel.setBackground(Color.getHSBColor((float) 0.5, (float) 0.5, (float) 0.7));
-        leftPanel.add(CounterPlayers.get(1));
-        leftPanel.add(CounterPlayers.get(2));
+        leftPanel.add(counterPlayers.get(1));
+        leftPanel.add(counterPlayers.get(2));
 
         panel.add(centralPanel, BorderLayout.CENTER);
         panel.add(controler, BorderLayout.SOUTH);
@@ -409,21 +421,19 @@ public class Poker_Client {
 
     public static void main(String[] args) {
         String ip;
-        
+
         WelcomeFrame wFrame = new WelcomeFrame();
-        
+
         ip = wFrame.getIp();
-        
+
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 createAndShowGui();
             }
         });
-        
-        
-        
+
         ServerConection(ip);//spojime se se serverem
-        
+
     }
 }

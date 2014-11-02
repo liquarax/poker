@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import poker.*;
+import poker.communication.ClientClosedException;
 
 /**
  * Soket, používaný na spojení s klientem. Pamatuje si v sobě informace o hráči.
@@ -51,15 +52,19 @@ public class PokerSocket {
         return this.chips;
     }
 
-    public void SetPlaying() {
-        this.send("chips");
-        this.send(chips);
+    public void setPlaying() {
+        sendChipsStatus();
         plays = true;
         all_in = false;
         bet = 0;
         c.clear();
     }
 
+    public void sendChipsStatus(){
+        this.send("chips");
+        this.send(chips);
+    }
+    
     public boolean is_All_in() {
         return all_in;
     }
@@ -78,7 +83,7 @@ public class PokerSocket {
      * @param won informace, zda hráč vyhrál
      * @param pot kolik je jeho případná odměna
      */
-    public void EndPlaying(boolean won, int pot) {
+    public void endPlaying(boolean won, int pot) {
         plays = false;
         chips -= bet;
         if (won) {
@@ -132,7 +137,7 @@ public class PokerSocket {
         try {
             return in.readLine();
         } catch (IOException ex) {
-            return "";
+            throw new ClientClosedException();
         }
     }
 
