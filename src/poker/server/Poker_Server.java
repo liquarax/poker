@@ -20,7 +20,7 @@ import poker.communication.CommunicationCommons;
  * @author Jaroslav Brabec
  */
 public class Poker_Server {
-
+    
     static int actbet;
 
     /**
@@ -37,7 +37,7 @@ public class Poker_Server {
         }
         return cds;
     }
-
+    
     public static class WinnerException extends Exception {
     }
 
@@ -160,7 +160,7 @@ public class Poker_Server {
         }
         while (players.size() > 1) { //kazde kolo hry
             try {
-
+                
                 d.shufle();
                 pot = 0;
                 //hide cards
@@ -185,7 +185,7 @@ public class Poker_Server {
                 players.get(first).setBet(actbet);
                 players.get(first).send(CommunicationCommons.setBlindMessage);
                 players.get(first).send(actbet);
-
+                
                 first = (first + 1) % players.size();
                 //prvni kolo sazek
                 pot = Bets(players, actbet, pot, first);
@@ -230,16 +230,19 @@ public class Poker_Server {
                 Collections.sort(ph);
                 int winCount = 0; //pocet vyhercu
                 ArrayList<Integer> winners = new ArrayList<Integer>();
+                ArrayList<Integer> loosers = new ArrayList<Integer>();
                 for (PokerSocket p : players) {
-                    if (p.isPlaying() && p.gethand().equals(ph.get(0))) {
-                        winCount++;
-                        winners.add(players.indexOf(p)); //uvidime, jak moc dobre funguje
+                    if (p.isPlaying()) {
+                        if (p.gethand().equals(ph.get(0))) {
+                            winCount++;
+                            winners.add(players.indexOf(p)); //uvidime, jak moc dobre funguje
+                        } else {
+                            loosers.add(players.indexOf(p));
+                        }
                     }
                     p.send("Winning combination:" + ph.get(0));
                 }
                 //vyresime vyhry, potom prohry
-                ArrayList<Card> win_car = players.get(winners.get(0)).GetHideCards();
-                int WID = players.get(winners.get(0)).getID();
                 for (int i = 0; i < winCount; i++) {
                     if (players.get(winners.get(i)).is_All_in()) {
                         int my_bet = players.get(winners.get(i)).getBet();
@@ -248,12 +251,25 @@ public class Poker_Server {
                         players.get(winners.get(i)).endPlaying(true, pot / winCount);
                     }
                 }
+                
                 for (PokerSocket p : players) {
-                    p.send("winning player");
-                    p.send(WID);
-                    p.send("winning cards");
-                    p.send(win_car.get(0));
-                    p.send(win_car.get(1));
+                    p.send(CommunicationCommons.showingCardsMessage);
+                    p.send(winners.size()+loosers.size());
+                    for (int i = 0; i < winners.size(); i++) {
+                        p.send("winning player");
+                        p.send(players.get(winners.get(i)).getID());
+                        p.send("winning cards");
+                        p.send(players.get(winners.get(i)).GetHideCards().get(0));
+                        p.send(players.get(winners.get(i)).GetHideCards().get(1));
+                    }
+                    for (int i = 0; i < loosers.size(); i++) {
+                        p.send(CommunicationCommons.loosingPlayerIdMessage);
+                        p.send(players.get(loosers.get(i)).getID());
+                        p.send(CommunicationCommons.loosingCardsMessage);
+                        p.send(players.get(loosers.get(i)).GetHideCards().get(0));
+                        p.send(players.get(loosers.get(i)).GetHideCards().get(1));
+                        
+                    }
                     if (p.isPlaying()) {
                         p.endPlaying(false, pot);
                     }
@@ -308,7 +324,7 @@ public class Poker_Server {
             Logger.getLogger(Poker_Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
     public static void main(String[] args) {
         if (args.length > 1) {
             int i;
