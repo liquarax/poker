@@ -5,23 +5,34 @@
 package poker;
 
 /**
- * Posloupnost pěti karet. Nese informaci o hodnotě kombinace. Karty jsou seřazené dle velikosti
+ * Posloupnost pěti karet. Nese informaci o hodnotě kombinace. Karty jsou seřazené dle velikosti.
  * @author Jaroslav Brabec
  */
 public class poker_hand implements Comparable<poker_hand> {
     private poker_combinations value;
     private Card[] cards;
 
+    /**
+     * @return Jak velkou kombinaci struktura drží. 
+     */
     public poker_combinations getValue() {
         return value;
     }
 
+    /**
+     * @param i Karta na i-té pozici
+     * @return Objekt karty
+     */
     public Card getCard(int i) {
         return cards[i];
     }
 
     
-    
+    /**
+     * Konstruktor, jen dosadí hodnoty.
+     * @param value
+     * @param cards 
+     */
     public poker_hand(poker_combinations value, Card[] cards) {
         this.value=value;
         this.cards=cards;
@@ -36,7 +47,11 @@ public class poker_hand implements Comparable<poker_hand> {
         return str.substring(0, str.length()-1);
     }
 
-    
+    /**
+     * Porovná, jestli jsou dvě hands stejné.
+     * @param ph druhá poker hand
+     * @return 
+     */
     public boolean equals(poker_hand ph) {
         boolean res=false;
         if(this.value.toInt() == ph.getValue().toInt()){

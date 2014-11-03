@@ -7,7 +7,7 @@ package poker;
 import java.util.LinkedList;
 
 /**
- *
+ * Obsahuje jedinou metodu která z daných karet vyrobí nejlepší možnou kombinaci.
  * @author Jaroslav Brabec
  */
 public class poker_rules {

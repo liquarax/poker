@@ -5,7 +5,7 @@
 package poker;
 
 /**
- *Způsob uložení druhů kombinací a jejich hiearchie
+ * Způsob uložení druhů kombinací a jejich hiearchie
  * @author Jaroslav Brabec
  */
 public enum poker_combinations {
@@ -22,10 +22,17 @@ public enum poker_combinations {
     
     private final int value;
     
+    /**
+     * Konstruktor
+     * @param value kolikátá je to kombinace 
+     */
     poker_combinations(int value){
         this.value=value;
     }
     
+    /**
+     * @return Číslo kombinace
+     */
     public int toInt(){
         return this.value;
     }

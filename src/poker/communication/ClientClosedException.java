@@ -5,7 +5,7 @@
 package poker.communication;
 
 /**
- *
+ * Výjimka, která se vyhodí, je-li klient ukončen předčasně.
  * @author Jaroslav Brabec
  */
 public class ClientClosedException extends RuntimeException {

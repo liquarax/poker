@@ -202,7 +202,6 @@ public class Poker_Client {
      */
     private static void ServerConection(String address) {
         Socket s;
-        String str;
         try {
             s = new Socket(InetAddress.getByName(address), 7777);
             try {
@@ -211,14 +210,17 @@ public class Poker_Client {
                 s.close();
             }
         } catch (IOException ex) {
-            Logger.getLogger(Poker_Client.class.getName()).log(Level.SEVERE, null, ex);
+            //pohltim vyjimku, v dalsim kodu vim, ze se nemohu pripojit na server
+            //Logger.getLogger(Poker_Client.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        lmove.setText("Game ended:" + winOrLostResault);
+        if(winOrLostResault == null || winOrLostResault.equals(""))
+            lmove.setText("Cannot conect to server!");
+        else
+            lmove.setText("Game ended:" + winOrLostResault);
     }
 
     /**
-     * zobrazení karet
+     * Třída pro zobrazení karet.
      */
     private static class LargeCardPanel extends JPanel {
 
@@ -240,9 +242,12 @@ public class Poker_Client {
 
         @Override
         public void paint(Graphics grphcs) {
-            super.paint(grphcs); //To change body of generated methods, choose Tools | Templates. 
+            super.paint(grphcs);  
         }
 
+        /**
+         * Zobrazí rub karty.
+         */
         public void clear() {
             this.setBackground(Color.getHSBColor((float) 0.5, (float) 0.5, (float) 0.7));
             for (JLabel jd : jcd) {
@@ -253,11 +258,14 @@ public class Poker_Client {
             }
         }
 
+        /**
+         * Zobrazí líc karty.
+         */
         public void set() {
             this.setBackground(Color.getHSBColor((float) 0.5, (float) 0.5, (float) 0.7));
             int i = 0;
             for (Card c : cards) {
-                jcd.get(i).setText(c.toString());
+                jcd.get(i).setText(c.toSymbol());
                 jcd.get(i).setOpaque(true);
                 jcd.get(i).setBackground(Color.WHITE);
                 jcd.get(i).setForeground(c.getColor().toInt() < 2 ? Color.red : Color.BLACK);
@@ -274,8 +282,8 @@ public class Poker_Client {
         protected ArrayList<JLabel> jcd = new ArrayList<JLabel>();
 
         /**
-         *
-         * @param l
+         * Konstruktor přednastavá vzhled
+         * @param l LayoutManager
          * @param c Barva front-endu barvy
          */
         public SmallCardPanel(LayoutManager l) {
@@ -292,6 +300,9 @@ public class Poker_Client {
             }
         }
 
+        /**
+         * Zobrazí rub karet
+         */
         public void clear() {
             this.setBackground(Color.getHSBColor((float) 0.5, (float) 0.5, (float) 0.7));
             for (JLabel jd : jcd) {
@@ -307,11 +318,16 @@ public class Poker_Client {
             super.paint(grphcs); //To change body of generated methods, choose Tools | Templates. 
         }
 
+        /**
+         * Zobrazí líc karet
+         * @param cds karty
+         * @param frontEndCardColor Barva podkladu karty. Používá se: Bílá - standard, Žlutá - soupeř vyhrál, Zelená - hráč vyhrál. 
+         */
         public void set(ArrayList<Card> cds, Color frontEndCardColor) {
             this.setBackground(Color.getHSBColor((float) 0.5, (float) 0.5, (float) 0.7));
             int i = 0;
             for (Card c : cds) {
-                jcd.get(i).setText(c.toString());
+                jcd.get(i).setText(c.toSymbol());
                 jcd.get(i).setOpaque(true);
                 jcd.get(i).setBackground(frontEndCardColor);
                 jcd.get(i).setForeground(c.getColor().toInt() < 2 ? Color.red : Color.BLACK);
@@ -320,18 +336,6 @@ public class Poker_Client {
         }
     }
 
-//    private static JPanel InitCards(){
-//        JPanel p=new JPanel(new GridLayout(1, 5,4,0));
-//        p.setBackground(Color.getHSBColor((float) 0.5,(float) 0.5,(float) 0.7));
-//        cdl=new ArrayList<CardLabel>(5);
-//        for (int i = 0; i < 5; i++) {
-//            cdl.add(new CardLabel());
-//            cdl[i].save("2♥");
-//            p.add(cdl[i]);
-//        }
-//        
-//        return p;
-//    }
     /**
      * Připraví gui
      */
@@ -462,6 +466,9 @@ public class Poker_Client {
 
     }
 
+    /**
+     * @param args Měli by být prázdné 
+     */
     public static void main(String[] args) {
         String ip;
 

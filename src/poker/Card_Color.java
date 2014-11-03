@@ -16,21 +16,44 @@ public enum Card_Color {
     SPADES(3);
     
     private final int value;
-    private static final String chars="♥♦♣♠";
+    private static final String img="♥♦♣♠";
+    private static final String chars="HDCS";
     
+    /**
+     * Konstruktor
+     * @param value hodnota 0..4
+     */
     Card_Color(int value){
         this.value=value;
     }
     
+    /**
+     * @return vrátí hodnotu jako číslo 
+     */
     public int toInt(){
         return this.value;
     }
+    
+    /**
+     * @param c Znak z "HDCS"
+     * @return index
+     */
     public static int CharToInt(char c){
         return chars.indexOf(c);
     }
     
-    public char symbol(){
+    /**
+     * @return Vrátí vnitřní reprezentaci znaku. 
+     */
+    public char charRepre(){
         return chars.charAt(this.value);
+    }
+    
+    /**
+     * @return Vrátí symbol ♥♦♣♠, reprezentující hodnotu.
+     */
+    public char symbol(){
+        return img.charAt(this.value);
     }
     
     @Override

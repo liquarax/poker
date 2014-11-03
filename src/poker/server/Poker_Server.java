@@ -25,20 +25,8 @@ public class Poker_Server {
     static int actbet;
 
     /**
-     * nageneruje 5 karet, pro ladeni
-     *
-     * @return
+     * Výjimka je vyhozena, pokud hráč vyhraje tak, že ostatní položí karty
      */
-    public static Card[] GenCards() {
-        Deck d = new Deck();
-        Card[] cds = new Card[5];
-        for (int i = 0; i < 5; i++) {
-            cds[i] = d.draw_card();
-            System.out.println(cds[i]);
-        }
-        return cds;
-    }
-
     public static class WinnerException extends Exception {
     }
 
@@ -384,6 +372,10 @@ public class Poker_Server {
         }
     }
 
+    /**
+     * Začátek hry
+     * @param args {počet hráčů} {počet žetonů na začátku hry} 
+     */
     public static void main(String[] args) {
         if (args.length > 1 && args.length<3) {
             int i;
@@ -395,6 +387,5 @@ public class Poker_Server {
         } else {
             System.out.println("spatny pocet argumentu");
         }
-//        theGame(2, 1000);
     }
 }

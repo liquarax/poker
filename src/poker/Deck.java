@@ -5,7 +5,7 @@ import java.util.*;
 
 
 /**
- *Balík karet
+ *Balík karet.
  * @see Card
  * @author Jaroslav Brabec
  */
@@ -14,7 +14,7 @@ public class Deck {
     private LinkedList<Card> Burned;
     
     /**
-     *Vytvoří všechny možné kombinace a uloží je do balíku 
+     *Vytvoří všechny možné karty a uloží je do balíku 
      */
     private void init(){
         DArr=new LinkedList<Card>();
@@ -28,7 +28,7 @@ public class Deck {
     }
     
     /**
-     * Vytvoří náhodnou permutaci
+     * Vytvoří náhodnou permutaci karet v balíku
      */
     public final void shufle(){
         DArr.addAll(Burned);
@@ -52,6 +52,9 @@ public class Deck {
         return c;
     }
     
+    /**
+     * Konstruktor vytvoří balík a zamíchá ho.
+     */
     public Deck() {
         init();
         shufle();

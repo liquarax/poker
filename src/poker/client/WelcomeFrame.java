@@ -24,15 +24,24 @@ public final class WelcomeFrame {
 
     private String ip;
 
+    /**
+     * @return IP, na kterou se chce uživatel připojit.
+     */
     public String getIp() {
         return ip;
     }
 
+    /**
+     * Konstruktor, priradi defaultni ip loopback a vytvori okynko
+     */
     public WelcomeFrame() {
         this.ip = "127.0.0.1";
         this.createAndShowGui();
     }
 
+    /**
+     * Vyrobí úvodní okýnko
+     */
     private void createAndShowGui() {
         final JFrame frame = new JFrame("Poker");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

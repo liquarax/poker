@@ -4,7 +4,7 @@
  */
 package poker;
 /**
- *Obsahuje informaci o hodnotě
+ *Obsahuje informaci o hodnotě karty (2,3 ... královna,král,eso)
  * @author Jaroslav Brabec
  */
 public enum Card_Value {
@@ -24,14 +24,26 @@ public enum Card_Value {
 
     private final int value;
     
+    /**
+     * Konstruktor
+     * @param value hodnota 0-12 
+     */
     Card_Value(int value){
         this.value=value;
     }
     
+    /**
+     * @return Hodnota jako integer 
+     */
     public int toInt(){
         return this.value;
     }
     
+    /**
+     * Převod ze znaku reprezentujícího hodnotu na int
+     * @param c
+     * @return 
+     */
     public static int CharToInt(char c){
         if (c=='1') 
             return 8;
@@ -49,6 +61,9 @@ public enum Card_Value {
         }
     }
     
+    /**
+     * @return Vrací hodnotu 2-A karty
+     */
     public String symbol(){
         if(this.value<9)
             return ""+(this.value+2);
