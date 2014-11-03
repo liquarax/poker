@@ -26,6 +26,7 @@ public class Poker_Client {
     private static boolean onMove;
     private static boolean moved;
     private static String myMove;
+    private static String winOrLostResault;
     private volatile static LargeCardPanel centralCp;
     private volatile static SmallCardPanel rightCp;
     private static ArrayList<SmallCardPanel> counterPlayers;
@@ -47,6 +48,7 @@ public class Poker_Client {
         cards = new ArrayList<Card>();
         hidecards = new ArrayList<Card>();
         onMove = false;
+        winOrLostResault = "";
         myLastBetInRound = 0;
         //prijmu id
         me = Integer.parseInt(in.readLine());
@@ -83,8 +85,8 @@ public class Poker_Client {
                                 hidecards.add(new Card(in.readLine()));
                                 hidecards.add(new Card(in.readLine()));
                                 counterPlayers.get(winner).set(hidecards, Color.YELLOW);
-                            }else{
-                            //2x prectu sve karty
+                            } else {
+                                //2x prectu sve karty
                                 hidecards.clear();
                                 hidecards.add(new Card(in.readLine()));
                                 hidecards.add(new Card(in.readLine()));
@@ -106,15 +108,15 @@ public class Poker_Client {
                                 hidecards.add(new Card(in.readLine()));
                                 hidecards.add(new Card(in.readLine()));
                                 counterPlayers.get(looser).set(hidecards, Color.WHITE);
-                            }else{
-                            //2x prectu sve karty
+                            } else {
+                                //2x prectu sve karty
                                 in.readLine();
                                 in.readLine();
                             }
                         }
                     }
                     try {
-                        Thread.sleep(15000);
+                        Thread.sleep(5000);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Poker_Client.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -125,10 +127,14 @@ public class Poker_Client {
 
 
                 if (s.equals("You have won!")) {
+                    winOrLostResault="You have won!";
                     lmove.setText("You have won!");
+                    out.println(CommunicationCommons.communicationEndedMessage);
                 }
                 if (s.equals("You have lost!")) {
+                    winOrLostResault="You have lost!";
                     lmove.setText("You have lost!");
+                    out.println(CommunicationCommons.communicationEndedMessage);
                 }
                 if (s.equals("hide cards")) { //zacina dalsi kolo hry
                     try {
@@ -186,6 +192,7 @@ public class Poker_Client {
                 }
             }
         } catch (SocketException se) {
+            se.getMessage();
             //pohlceni vyjimky. hra konci
         }
     }
@@ -206,7 +213,8 @@ public class Poker_Client {
         } catch (IOException ex) {
             Logger.getLogger(Poker_Client.class.getName()).log(Level.SEVERE, null, ex);
         }
-        lmove.setText("Game ended:" + lmove.getText());
+        
+        lmove.setText("Game ended:" + winOrLostResault);
     }
 
     /**

@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import poker.*;
 import poker.communication.ClientClosedException;
 import poker.communication.CommunicationCommons;
+import poker.communication.OnlyOnePlayerException;
 
 /**
  * Server, zajišťuje průběh hry a komunikuje s klientem Skončí, když už nemá
@@ -20,7 +21,7 @@ import poker.communication.CommunicationCommons;
  * @author Jaroslav Brabec
  */
 public class Poker_Server {
-    
+
     static int actbet;
 
     /**
@@ -37,7 +38,7 @@ public class Poker_Server {
         }
         return cds;
     }
-    
+
     public static class WinnerException extends Exception {
     }
 
@@ -127,8 +128,10 @@ public class Poker_Server {
                     }
                 } catch (ClientClosedException cce) {
                     players.remove(i);
+                    if (players.size() < 2) {
+                        throw new OnlyOnePlayerException();
+                    }
                     continue;
-                    //TODO deal with exceptions
                 }
             }
             if (!change) {
@@ -160,11 +163,13 @@ public class Poker_Server {
         }
         while (players.size() > 1) { //kazde kolo hry
             try {
-                
+
                 d.shufle();
                 pot = 0;
                 //hide cards
                 for (PokerSocket p : players) {
+                    p.send(CommunicationCommons.potIsMessage); //pot na zacatku
+                    p.send(0);
                     p.setPlaying();
                     p.send("hide cards");
                     my_cd = d.draw_card();
@@ -185,7 +190,7 @@ public class Poker_Server {
                 players.get(first).setBet(actbet);
                 players.get(first).send(CommunicationCommons.setBlindMessage);
                 players.get(first).send(actbet);
-                
+
                 first = (first + 1) % players.size();
                 //prvni kolo sazek
                 pot = Bets(players, actbet, pot, first);
@@ -226,35 +231,77 @@ public class Poker_Server {
                     if (p.isPlaying()) {
                         ph.add(p.gethand());
                     }
+                    //nastaveni posledni zname sazky
+                    p.setEndBet(p.getBet());
                 }
                 Collections.sort(ph);
+
                 int winCount = 0; //pocet vyhercu
                 ArrayList<Integer> winners = new ArrayList<Integer>();
                 ArrayList<Integer> loosers = new ArrayList<Integer>();
-                for (PokerSocket p : players) {
-                    if (p.isPlaying()) {
-                        if (p.gethand().equals(ph.get(0))) {
-                            winCount++;
-                            winners.add(players.indexOf(p)); //uvidime, jak moc dobre funguje
+
+                while (pot > 0) {
+                    int localWinCount = 0;
+                    ArrayList<PlayerBetAndIdPair> localWinners = new ArrayList<PlayerBetAndIdPair>();
+                    for (PokerSocket p : players) {
+                        if (p.isPlaying()) {
+                            if (p.gethand().equals(ph.get(0)) && p.getEndBet() > 0) { //pridam ho pouze pokud vyhral
+                                localWinCount++;
+                                localWinners.add(new PlayerBetAndIdPair(p.getEndBet(), players.indexOf(p))); //uvidime, jak moc dobre funguje
+                            }
+                        }
+                        p.send("Winning combination:" + ph.get(0));
+                    }
+
+                    winCount += localWinCount;
+
+                    Collections.sort(localWinners);//serazeno podle sazky
+                    //vyresime vyhry, potom prohry
+                    for (int i = 0; i < localWinCount; i++) {
+                        if (players.get(localWinners.get(i).getId()).is_All_in()) {
+                            //spocteme vyhru
+                            int my_bet = players.get(localWinners.get(i).getId()).getEndBet() / localWinCount;
+                            int won = 0;
+                            for (PokerSocket p : players) {
+                                //prohravajici hrac
+                                if (!p.isPlaying() || (p.isPlaying() && !p.gethand().equals(ph.get(0)))) {
+                                    if (p.getEndBet() >= my_bet) {
+                                        won += my_bet;
+                                        p.setEndBet(p.getEndBet() - my_bet);
+                                    } else {
+                                        won += p.getEndBet() / (localWinCount - i);
+                                        p.setEndBet(p.getEndBet() - p.getEndBet() / (localWinCount - i));
+                                    }
+                                }
+                            }
+                            won += my_bet * localWinCount; //nesmim zapomenout na to, co jsem vsadil
+                            players.get(localWinners.get(i).getId()).setEndBet(0);
+                            players.get(localWinners.get(i).getId()).endPlaying(true, won);
+                            pot -= won;
                         } else {
-                            loosers.add(players.indexOf(p));
+                            int won = pot / (localWinCount - i);
+                            players.get(localWinners.get(i).getId()).endPlaying(true, won);
+                            pot -= won;
                         }
                     }
-                    p.send("Winning combination:" + ph.get(0));
-                }
-                //vyresime vyhry, potom prohry
-                for (int i = 0; i < winCount; i++) {
-                    if (players.get(winners.get(i)).is_All_in()) {
-                        int my_bet = players.get(winners.get(i)).getBet();
-                        players.get(winners.get(i)).endPlaying(true, (Math.max(1, pot / my_bet) * my_bet) / winCount);
-                    } else {
-                        players.get(winners.get(i)).endPlaying(true, pot / winCount);
+
+                    for (PlayerBetAndIdPair p : localWinners) {
+                        winners.add(p.getId());
+                    }
+                    //odstranim prvni vyherni kombinace
+                    poker_hand winHand = ph.get(0);
+                    while (!ph.isEmpty() && winHand.equals(ph.get(0))) {
+                        ph.remove(0);
                     }
                 }
-                
+                for (PokerSocket p : players) {
+                    if (p.isPlaying()) {
+                        loosers.add(players.indexOf(p));
+                    }
+                }
                 for (PokerSocket p : players) {
                     p.send(CommunicationCommons.showingCardsMessage);
-                    p.send(winners.size()+loosers.size());
+                    p.send(winners.size() + loosers.size());
                     for (int i = 0; i < winners.size(); i++) {
                         p.send("winning player");
                         p.send(players.get(winners.get(i)).getID());
@@ -268,7 +315,7 @@ public class Poker_Server {
                         p.send(CommunicationCommons.loosingCardsMessage);
                         p.send(players.get(loosers.get(i)).GetHideCards().get(0));
                         p.send(players.get(loosers.get(i)).GetHideCards().get(1));
-                        
+
                     }
                     if (p.isPlaying()) {
                         p.endPlaying(false, pot);
@@ -285,6 +332,8 @@ public class Poker_Server {
                         p.endPlaying(true, pot);
                     }
                 }
+            } catch (OnlyOnePlayerException oope) {
+                continue;//while cyklus se sam vyporada s problemem
             }
             first = (first - 1 + players.size()) % players.size();
             //kontrola, jestli neni bez penez
@@ -292,14 +341,22 @@ public class Poker_Server {
                 if (!players.get(i).has_chips()) {
                     players.get(i).sendChipsStatus();
                     players.get(i).send("You have lost!");
+                    players.get(i).send(CommunicationCommons.potIsMessage);
+                    players.get(i).send(0);
                     players.remove(i);
-                    i = 0;
+                    i--;//provede se ++
                 }
             }
         }//end while
         //posledni hrac
+        players.get(0).send(CommunicationCommons.potIsMessage);
+        players.get(0).send(0);
         players.get(0).sendChipsStatus();
         players.get(0).send("You have won!");
+        String response = players.get(0).recv();
+        if (!response.equals(CommunicationCommons.communicationEndedMessage)) {
+            throw new RuntimeException();//pokud neskonci komunikace spravne mela by byt vyhozena nejaka vyjimka
+        }
     }
 
     /**
@@ -320,13 +377,15 @@ public class Poker_Server {
             } finally {
                 s.close();
             }
+        } catch (java.net.BindException be) {
+            System.out.println("port 7777 se jiz pouziva");
         } catch (IOException ex) {
             Logger.getLogger(Poker_Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public static void main(String[] args) {
-        if (args.length > 1) {
+        if (args.length > 1 && args.length<3) {
             int i;
             if ((i = Integer.parseInt(args[0])) <= 4) {
                 theGame(i, Integer.parseInt(args[1]));
@@ -334,7 +393,7 @@ public class Poker_Server {
                 System.out.println("moc hracu");
             }
         } else {
-            System.out.println("malo argumentu");
+            System.out.println("spatny pocet argumentu");
         }
 //        theGame(2, 1000);
     }

@@ -27,6 +27,16 @@ public class PokerSocket {
     private Socket soket;
     private int chips;
     private int bet, id;
+    private int endBet;
+
+    //posledni znama sazka
+    public int getEndBet() {
+        return endBet;
+    }
+
+    public void setEndBet(int endBet) {
+        this.endBet = endBet;
+    }
     private boolean plays;
     private boolean all_in;
     private poker_hand my_hand;
