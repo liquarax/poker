@@ -10,7 +10,7 @@ import java.util.LinkedList;
  * Obsahuje jedinou metodu která z daných karet vyrobí nejlepší možnou kombinaci.
  * @author Jaroslav Brabec
  */
-public class poker_rules {
+public class PokerRules {
 
     /**
      * dostane na vstup několik karet a určí nejlepší kombinaci z nich.
@@ -18,7 +18,7 @@ public class poker_rules {
      * @param cards karty, ze kterých má být vybrána kombinace
      * @return nejlepší možná kombinace
      */
-    public static poker_hand best_hand(Card[] cards) {
+    public static PokerHand best_hand(Card[] cards) {
         int[] values, colors;
         int max_value = 0;
         int max_color = 0;
@@ -30,7 +30,7 @@ public class poker_rules {
         LinkedList<Card> chosed = new LinkedList<Card>();
         values = new int[13];
         colors = new int[4];
-        poker_hand res;
+        PokerHand res;
         chosed.clear();
 
         for (Card c : cards) {
@@ -89,7 +89,7 @@ public class poker_rules {
                 }
             }
             if (straight_flush) {
-                return new poker_hand(poker_combinations.Straight_Flush, chosed.toArray(new Card[chosed.size()]));
+                return new PokerHand(PokerCombinations.Straight_Flush, chosed.toArray(new Card[chosed.size()]));
             }
             chosed.clear();
         }
@@ -109,7 +109,7 @@ public class poker_rules {
                     for (int j = 0; j < 4; j++) {
                         if (arr[i][j]) {
                             chosed.add(new Card(i, j));
-                            return new poker_hand(poker_combinations.Four_of_Kind, chosed.toArray(new Card[chosed.size()]));
+                            return new PokerHand(PokerCombinations.Four_of_Kind, chosed.toArray(new Card[chosed.size()]));
                         }
                     }
                 }
@@ -139,7 +139,7 @@ public class poker_rules {
                             }
                         }
                     }
-                    return new poker_hand(poker_combinations.Full_House, chosed.toArray(new Card[chosed.size()]));
+                    return new PokerHand(PokerCombinations.Full_House, chosed.toArray(new Card[chosed.size()]));
                 }
             }
         }
@@ -160,7 +160,7 @@ public class poker_rules {
                     break;
                 }
             }
-            return new poker_hand(poker_combinations.Flush, chosed.toArray(new Card[chosed.size()]));
+            return new PokerHand(PokerCombinations.Flush, chosed.toArray(new Card[chosed.size()]));
         }
         if (straight) {
             int str = 0;
@@ -181,7 +181,7 @@ public class poker_rules {
                     break;
                 }
             }
-            return new poker_hand(poker_combinations.Straight, chosed.toArray(new Card[chosed.size()]));
+            return new PokerHand(PokerCombinations.Straight, chosed.toArray(new Card[chosed.size()]));
         }
         if (max_value >= 3) {
             for (int i = values.length - 1; i >= 0; i--) {
@@ -210,7 +210,7 @@ public class poker_rules {
                     }
                 }
             }
-            return new poker_hand(poker_combinations.Three_Of_Kind, chosed.toArray(new Card[chosed.size()]));
+            return new PokerHand(PokerCombinations.Three_Of_Kind, chosed.toArray(new Card[chosed.size()]));
         }
 
         if (pairs >= 2) {
@@ -233,7 +233,7 @@ public class poker_rules {
                     for (int j = 0; j < 4; j++) {
                         if (arr[i][j]) {
                             chosed.add(new Card(i, j));
-                            return new poker_hand(poker_combinations.Two_Pair, chosed.toArray(new Card[chosed.size()]));
+                            return new PokerHand(PokerCombinations.Two_Pair, chosed.toArray(new Card[chosed.size()]));
                         }
                     }
                 }
@@ -269,7 +269,7 @@ public class poker_rules {
                 }
 
             }
-            return new poker_hand(poker_combinations.One_Pair, chosed.toArray(new Card[chosed.size()]));
+            return new PokerHand(PokerCombinations.One_Pair, chosed.toArray(new Card[chosed.size()]));
         }
         //high card
         {
@@ -288,7 +288,7 @@ public class poker_rules {
                     break;
                 }
             }
-            return new poker_hand(poker_combinations.High_Card, chosed.toArray(new Card[chosed.size()]));
+            return new PokerHand(PokerCombinations.High_Card, chosed.toArray(new Card[chosed.size()]));
         }
 
     }

@@ -21,7 +21,7 @@ import poker.communication.CommunicationCommons;
  *
  * @author Jaroslav Brabec
  */
-public class Poker_Client {
+public class PokerClient {
 
     private static boolean onMove;
     private static boolean moved;
@@ -118,7 +118,7 @@ public class Poker_Client {
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(Poker_Client.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(PokerClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     for (int i = 0; i < counterPlayers.size(); i++) {
                         counterPlayers.get(i).clear();
@@ -149,7 +149,7 @@ public class Poker_Client {
                         rightCp.set(hidecards, Color.WHITE);
                         centralCp.clear();
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(Poker_Client.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(PokerClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
                 if (s.equals("flop")) {
@@ -211,7 +211,7 @@ public class Poker_Client {
             }
         } catch (IOException ex) {
             //pohltim vyjimku, v dalsim kodu vim, ze se nemohu pripojit na server
-            //Logger.getLogger(Poker_Client.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(PokerClient.class.getName()).log(Level.SEVERE, null, ex);
         }
         if(winOrLostResault == null || winOrLostResault.equals(""))
             lmove.setText("Cannot conect to server!");
@@ -391,6 +391,7 @@ public class Poker_Client {
                 if (onMove) {
                     myMove = "call";
                     Integer chipsLeft = Integer.parseInt(chips.getText()) - Integer.parseInt(bet.getText());
+                    chipsLeft = Math.max(chipsLeft, 0);
                     chips.setText(chipsLeft.toString());
                     myLastBetInRound += Integer.parseInt(bet.getText());
                     moved = true;

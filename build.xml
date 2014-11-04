@@ -71,4 +71,17 @@
     nbproject/build-impl.xml file. 
 
     -->
+    
+    <target name="-do-jar-without-manifest">
+        <jar destfile="dist/poker/PokerServer.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="poker.server.PokerServer"/>
+            </manifest>
+        </jar>
+        <jar destfile="dist/poker/PokerClient.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="poker.client.PokerClient"/>
+            </manifest>
+        </jar>
+    </target>
 </project>

@@ -19,8 +19,8 @@ public class Deck {
     private void init(){
         DArr=new LinkedList<Card>();
         Burned=new LinkedList<Card>();
-        for (Card_Color CC: Card_Color.values()) 
-            for(Card_Value CV: Card_Value.values())
+        for (CardColor CC: CardColor.values()) 
+            for(CardValue CV: CardValue.values())
             {   
                 DArr.add(new Card(CV, CC));
             }

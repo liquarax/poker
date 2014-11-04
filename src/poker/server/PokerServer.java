@@ -20,7 +20,7 @@ import poker.communication.OnlyOnePlayerException;
  *
  * @author Jaroslav Brabec
  */
-public class Poker_Server {
+public class PokerServer {
 
     static int actbet;
 
@@ -38,7 +38,7 @@ public class Poker_Server {
      * @param pot dosavadní hodnota banku
      * @param first od kterého hráče má začít sázení
      * @return
-     * @throws poker.server.Poker_Server.WinnerException
+     * @throws poker.server.PokerServer.WinnerException
      */
     public static int Bets(ArrayList<PokerSocket> players, int bet, int pot, int first) throws WinnerException {
         boolean change, first_time; //zmenila se toto kolo sazka?
@@ -214,7 +214,7 @@ public class Poker_Server {
                 }
                 pot = Bets(players, actbet, pot, first); //zaverecny pot
                 //vyhodnoceni
-                ArrayList<poker_hand> ph = new ArrayList<poker_hand>();
+                ArrayList<PokerHand> ph = new ArrayList<PokerHand>();
                 for (PokerSocket p : players) {
                     if (p.isPlaying()) {
                         ph.add(p.gethand());
@@ -277,7 +277,7 @@ public class Poker_Server {
                         winners.add(p.getId());
                     }
                     //odstranim prvni vyherni kombinace
-                    poker_hand winHand = ph.get(0);
+                    PokerHand winHand = ph.get(0);
                     while (!ph.isEmpty() && winHand.equals(ph.get(0))) {
                         ph.remove(0);
                     }
@@ -368,7 +368,7 @@ public class Poker_Server {
         } catch (java.net.BindException be) {
             System.out.println("port 7777 se jiz pouziva");
         } catch (IOException ex) {
-            Logger.getLogger(Poker_Server.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PokerServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

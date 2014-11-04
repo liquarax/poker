@@ -7,7 +7,7 @@ package poker;
  *Obsahuje informaci o hodnotě karty (2,3 ... královna,král,eso)
  * @author Jaroslav Brabec
  */
-public enum Card_Value {
+public enum CardValue {
     TWO(0),
     THREE(1),
     FOUR(2),
@@ -28,7 +28,7 @@ public enum Card_Value {
      * Konstruktor
      * @param value hodnota 0-12 
      */
-    Card_Value(int value){
+    CardValue(int value){
         this.value=value;
     }
     

@@ -8,7 +8,7 @@ package poker;
  * Informace o barvě
  * @author Jaroslav Brabec
  */
-public enum Card_Color {
+public enum CardColor {
    
     HEARTHS(0),
     DIAMONDS(1),
@@ -23,7 +23,7 @@ public enum Card_Color {
      * Konstruktor
      * @param value hodnota 0..4
      */
-    Card_Color(int value){
+    CardColor(int value){
         this.value=value;
     }
     

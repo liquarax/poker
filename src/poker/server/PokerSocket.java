@@ -31,7 +31,7 @@ public class PokerSocket {
     private int endBet;
     private boolean plays;
     private boolean all_in;
-    private poker_hand my_hand;
+    private PokerHand my_hand;
     private LinkedList<Card> c;
 
     /**
@@ -186,8 +186,8 @@ public class PokerSocket {
     /**
      * @return vrati nejlepsi kombinaci, kterou má hráč v ruce
      */
-    public poker_hand gethand() {
-        return poker_rules.best_hand(c.toArray(new Card[c.size()]));
+    public PokerHand gethand() {
+        return PokerRules.best_hand(c.toArray(new Card[c.size()]));
     }
 
     /**

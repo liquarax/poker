@@ -8,7 +8,7 @@ package poker;
  * Způsob uložení druhů kombinací a jejich hiearchie
  * @author Jaroslav Brabec
  */
-public enum poker_combinations {
+public enum PokerCombinations {
     
     Straight_Flush(8),
     Four_of_Kind(7),
@@ -26,7 +26,7 @@ public enum poker_combinations {
      * Konstruktor
      * @param value kolikátá je to kombinace 
      */
-    poker_combinations(int value){
+    PokerCombinations(int value){
         this.value=value;
     }
     

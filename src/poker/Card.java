@@ -6,14 +6,14 @@ package poker;
 
 /**
  * Třída obsahující informaci o kartě, její barvu a hodnotu
- * @see Card_Color
- * @see Card_Value
+ * @see CardColor
+ * @see CardValue
  * @author Jaroslav Brabec
  */
 public class Card {
 
-    private Card_Value value;
-    private Card_Color color;
+    private CardValue value;
+    private CardColor color;
 
     /**
      * Konsturktor
@@ -21,7 +21,7 @@ public class Card {
      * @param value hodnota karty
      * @param color barva karty
      */
-    public Card(Card_Value value, Card_Color color) {
+    public Card(CardValue value, CardColor color) {
         this.value = value;
         this.color = color;
     }
@@ -33,61 +33,61 @@ public class Card {
      * @param color barva karty
      */
     public Card(int value, int color) {
-        Card_Color cc = Card_Color.HEARTHS;
-        Card_Value cv = Card_Value.TWO;
+        CardColor cc = CardColor.HEARTHS;
+        CardValue cv = CardValue.TWO;
         switch (color) {
             case 0:
-                cc = Card_Color.HEARTHS;
+                cc = CardColor.HEARTHS;
                 break;
             case 1:
-                cc = Card_Color.DIAMONDS;
+                cc = CardColor.DIAMONDS;
                 break;
             case 2:
-                cc = Card_Color.CLUBS;
+                cc = CardColor.CLUBS;
                 break;
             case 3:
-                cc = Card_Color.SPADES;
+                cc = CardColor.SPADES;
                 break;
         }
         switch (value) {
             case 0:
-                cv = Card_Value.TWO;
+                cv = CardValue.TWO;
                 break;
             case 1:
-                cv = Card_Value.THREE;
+                cv = CardValue.THREE;
                 break;
             case 2:
-                cv = Card_Value.FOUR;
+                cv = CardValue.FOUR;
                 break;
             case 3:
-                cv = Card_Value.FIVE;
+                cv = CardValue.FIVE;
                 break;
             case 4:
-                cv = Card_Value.SIX;
+                cv = CardValue.SIX;
                 break;
             case 5:
-                cv = Card_Value.SEVEN;
+                cv = CardValue.SEVEN;
                 break;
             case 6:
-                cv = Card_Value.EIGHT;
+                cv = CardValue.EIGHT;
                 break;
             case 7:
-                cv = Card_Value.NINE;
+                cv = CardValue.NINE;
                 break;
             case 8:
-                cv = Card_Value.TEN;
+                cv = CardValue.TEN;
                 break;
             case 9:
-                cv = Card_Value.JACK;
+                cv = CardValue.JACK;
                 break;
             case 10:
-                cv = Card_Value.QUEEN;
+                cv = CardValue.QUEEN;
                 break;
             case 11:
-                cv = Card_Value.KING;
+                cv = CardValue.KING;
                 break;
             case 12:
-                cv = Card_Value.ACE;
+                cv = CardValue.ACE;
                 break;
         }
         this.color = cc;
@@ -100,20 +100,20 @@ public class Card {
      * @param val
      */
     public Card(String val) {
-        this(Card_Value.CharToInt(val.charAt(0)), Card_Color.CharToInt(val.charAt(val.length() - 1)));
+        this(CardValue.CharToInt(val.charAt(0)), CardColor.CharToInt(val.charAt(val.length() - 1)));
     }
 
     /**
      * @return Vrátí barvu karty
      */
-    public Card_Color getColor() {
+    public CardColor getColor() {
         return color;
     }
 
     /**
      * @return Vrátí hodnotu karty
      */
-    public Card_Value getValue() {
+    public CardValue getValue() {
         return value;
     }
 
