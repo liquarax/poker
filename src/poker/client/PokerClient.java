@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.*;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -470,14 +471,14 @@ public class PokerClient {
     /**
      * @param args Měli by být prázdné 
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException, InvocationTargetException {
         String ip;
 
         WelcomeFrame wFrame = new WelcomeFrame();
 
         ip = wFrame.getIp();
 
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
             @Override
             public void run() {
                 createAndShowGui();
