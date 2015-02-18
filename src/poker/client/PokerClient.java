@@ -57,6 +57,8 @@ public class PokerClient {
         try {
             while (true) {
                 s = in.readLine();
+                if(s==null)
+                    throw new SocketException("Connection terminated");
                 System.out.println(s);
                 if (s.equals("chips")) {    //pocet zetonnu na zacatku hry
                     while (chips == null) {

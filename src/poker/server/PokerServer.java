@@ -72,6 +72,8 @@ public class PokerServer {
                         players.get(i).send("bet is");
                         players.get(i).send(bet);
                         String s = players.get(i).recv();
+                        if(s==null) //bugfix for unix 
+                            throw new ClientClosedException();
                         if (s.equals("fold")) //polozil karty
                         {
                             players.get(i).endPlaying(false, pot);
