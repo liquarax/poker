@@ -72,7 +72,7 @@
 
     -->
     
-    <target name="-do-jar-without-manifest">
+    <target name="-do-jar-jar">
         <jar destfile="dist/poker/PokerServer.jar" basedir="build/classes">
             <manifest>
                 <attribute name="Main-Class" value="poker.server.PokerServer"/>
